@@ -18,8 +18,8 @@ const axiosRequest = async (idUser: number, typeAction: string) => {
         typeAction,
       },
     });
-  } catch (error) {
-    throw new BadRequestException(error);
+  } catch {
+    throw new BadRequestException("server 'history' is unavailable");
   }
 };
 
@@ -42,7 +42,7 @@ export class UserService {
       email: createUserDto.email,
     });
 
-    axiosRequest(user.id, 'create');
+    await axiosRequest(user.id, 'create');
 
     return { user };
   }
@@ -59,7 +59,15 @@ export class UserService {
 
     if (!user) throw new NotFoundException('User not found');
 
-    axiosRequest(user.id, 'update');
+    const existName = await this.userRepository.findOne({
+      where: {
+        name: updateUserDto.name,
+      },
+    });
+
+    if (existName) throw new BadRequestException('This name is already taken');
+
+    await axiosRequest(user.id, 'update');
 
     return await this.userRepository.update(id, updateUserDto);
   }
