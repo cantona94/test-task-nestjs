@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { HistoryOfActionsModule } from './history-of-actions/history-of-actions.module';
+import { HistoryOfActionsModule } from './history-of-action/history-of-action.module';
 
 async function bootstrap() {
   const history = await NestFactory.create(HistoryOfActionsModule);

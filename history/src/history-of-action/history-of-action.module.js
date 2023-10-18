@@ -1,7 +1,7 @@
 import { Module, Dependencies } from '@nestjs/common';
 import { ConfigService, ConfigModule } from '@nestjs/config';
-import { HistoryOfActionsService } from './history-of-actions.service';
-import { HistoryOfActionsController } from './history-of-actions.controller';
+import { HistoryOfActionsService } from './history-of-action.service';
+import { HistoryOfActionsController } from './history-of-action.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { HistoryOfAction } from './entities/history-of-action.entity';
 

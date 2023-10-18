@@ -7,7 +7,7 @@ import {
   Query,
   Bind,
 } from '@nestjs/common';
-import { HistoryOfActionsService } from './history-of-actions.service';
+import { HistoryOfActionsService } from './history-of-action.service';
 
 @Controller('history-of-actions')
 @Dependencies(HistoryOfActionsService)
@@ -28,10 +28,6 @@ export class HistoryOfActionsController {
   @Get()
   @Bind(Query())
   findWithPagination({ id = 1, page = 1, limit = 3 }) {
-    return this.historyOfActionsService.findWithPagination(
-      +id,
-      +page,
-      +limit,
-    );
+    return this.historyOfActionsService.findWithPagination(+id, +page, +limit);
   }
 }

@@ -9,10 +9,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import axios from 'axios';
+import { postData } from 'src/types';
 
 const axiosRequest = async (idUser: number, typeAction: string) => {
   try {
-    await axios.post('http://localhost:4000/history-of-actions', {
+    await axios.post<postData>('http://localhost:4000/history-of-actions', {
       params: {
         idUser,
         typeAction,
@@ -47,8 +48,16 @@ export class UserService {
     return { user };
   }
 
-  async findAll() {
-    const users = await this.userRepository.find();
+  async findAll(page: number, limit: number) {
+    const users = await this.userRepository.find({
+      take: limit,
+      skip: (page - 1) * limit,
+    });
+
+    if (Object.keys(users).length === 0) {
+      throw new NotFoundException('Users not found');
+    }
+
     return users;
   }
 
