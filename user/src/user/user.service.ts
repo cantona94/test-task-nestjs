@@ -9,16 +9,19 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import axios from 'axios';
-import { postData } from 'src/types';
+import { IUserDataForCreate } from 'src/types';
 
 const axiosRequest = async (idUser: number, typeAction: string) => {
   try {
-    await axios.post<postData>('http://localhost:4000/history-of-actions', {
-      params: {
-        idUser,
-        typeAction,
+    await axios.post<IUserDataForCreate>(
+      'http://localhost:4000/history-of-actions',
+      {
+        params: {
+          idUser,
+          typeAction,
+        },
       },
-    });
+    );
   } catch {
     throw new BadRequestException("server 'history' is unavailable");
   }
@@ -31,14 +34,14 @@ export class UserService {
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    const existUser = await this.userRepository.findOne({
+    const existUser: User | null = await this.userRepository.findOne({
       where: {
         name: createUserDto.name,
       },
     });
     if (existUser) throw new BadRequestException('This user already exist');
 
-    const user = await this.userRepository.save({
+    const user: User = await this.userRepository.save({
       name: createUserDto.name,
       email: createUserDto.email,
     });
@@ -49,11 +52,10 @@ export class UserService {
   }
 
   async findAll(page: number, limit: number) {
-    const users = await this.userRepository.find({
+    const users: User[] = await this.userRepository.find({
       take: limit,
       skip: (page - 1) * limit,
     });
-
     if (Object.keys(users).length === 0) {
       throw new NotFoundException('Users not found');
     }
@@ -62,18 +64,16 @@ export class UserService {
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
-    const user = await this.userRepository.findOne({
+    const user: User | null = await this.userRepository.findOne({
       where: { id },
     });
-
     if (!user) throw new NotFoundException('User not found');
 
-    const existName = await this.userRepository.findOne({
+    const existName: User | null = await this.userRepository.findOne({
       where: {
         name: updateUserDto.name,
       },
     });
-
     if (existName) throw new BadRequestException('This name is already taken');
 
     await axiosRequest(user.id, 'update');
